@@ -40,11 +40,6 @@
     "body": "Ian is a professional gamer and streamer."
   },
   {
-    "id": 10,
-    "name": "Jack",
-    "body": "Jack is a content writer with a passion for storytelling."
-  },
-  {
     "id": 11,
     "name": "Ranu",
     "body": "Ranu is a software intern"
@@ -57,5 +52,13 @@
   {
     "name": "Zensi",
     "id": 13
+  },
+  {
+    "name": "Zensi",
+    "id": 14
+  },
+  {
+    "id": 15,
+    "name": "Mansi"
   }
 ]

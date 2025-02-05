@@ -53,9 +53,7 @@ const server = http.createServer(async (req, res) => {
                 try {
                     const items = await readData();
                     const requestData = JSON.parse(body);
-                    if (!newItem.name) {
-                        throw new Error("Name is required");
-                    }
+                    
                     const newItem = {
                         id: items.length ? items[items.length - 1].id + 1 : 1, // Generate new ID
                         name: requestData.name,
