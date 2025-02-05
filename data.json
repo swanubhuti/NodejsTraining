@@ -46,10 +46,16 @@
   },
   {
     "id": 11,
-    "name": "Shanu"
+    "name": "Ranu",
+    "body": "Ranu is a software intern"
   },
   {
     "id": 12,
-    "name": "Shanu"
+    "name": "Shanu",
+    "body": "Shanu is fullstack intern"
+  },
+  {
+    "name": "Zensi",
+    "id": 13
   }
 ]

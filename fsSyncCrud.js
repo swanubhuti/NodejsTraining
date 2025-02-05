@@ -110,8 +110,11 @@ const server = http.createServer((req, res) => {
                 const updateData = JSON.parse(body);
                 
                 // Only update the provided fields
-                items[index] = { ...items[index], ...updateData };
-    
+                items[index] = {
+                    id: items[index].id,
+                    name: updateData.name || items[index].name,
+                    body: updateData.body || items[index].body,
+                };
                 writeData(items);
     
                 res.writeHead(200, { "Content-Type": "application/json" });

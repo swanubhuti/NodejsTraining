@@ -52,10 +52,15 @@ const server = http.createServer(async (req, res) => {
             req.on("end", async () => {
                 try {
                     const items = await readData();
-                    const newItem = JSON.parse(body);
+                    const requestData = JSON.parse(body);
                     if (!newItem.name) {
                         throw new Error("Name is required");
                     }
+                    const newItem = {
+                        id: items.length ? items[items.length - 1].id + 1 : 1, // Generate new ID
+                        name: requestData.name,
+                        body: requestData.body
+                    };
                     newItem.id = items.length ? items[items.length - 1].id + 1 : 1;
                     items.push(newItem);
                     await writeData(items);
@@ -83,7 +88,11 @@ const server = http.createServer(async (req, res) => {
                     }
                     const updatedItem = JSON.parse(body);
                     updatedItem.id = id;
-                    items[index] = updatedItem;
+                    items[index] = {
+                        id: id,
+                        name: requestData.name,
+                        body: requestData.body,
+                    };
                     await writeData(items);
                     res.writeHead(200, { "Content-Type": "application/json" });
                     res.end(JSON.stringify({ success: true, message: "Item updated", data: updatedItem }));
@@ -109,7 +118,11 @@ const server = http.createServer(async (req, res) => {
                     const updateData = JSON.parse(body);
                     
                     // Only update the provided fields
-                    items[index] = { ...items[index], ...updateData };
+                    items[index] = {
+                        id: items[index].id,
+                        name: updateData.name || items[index].name,
+                        body: updateData.body || items[index].body,
+                    };
         
                     await writeDataAsync(items);
         
