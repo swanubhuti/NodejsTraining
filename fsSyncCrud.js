@@ -51,11 +51,13 @@ const server = http.createServer((req, res) => {
         req.on("end", () => {
             try {
                 const items = readData();
-                const newItem = JSON.parse(body);
-                if (!newItem.name) {
-                    throw new Error("Name is required");
-                }
-                newItem.id = items.length ? items[items.length - 1].id + 1 : 1;
+                const requestData = JSON.parse(body);
+    
+                const newItem = {
+                    id: items.length ? items[items.length - 1].id + 1 : 1, // Generate new ID
+                    name: requestData.name,
+                    body: requestData.body
+                };
                 items.push(newItem);
                 writeData(items);
                 res.writeHead(201, { "Content-Type": "application/json" });
@@ -80,8 +82,8 @@ const server = http.createServer((req, res) => {
                 if (index === -1) {
                     throw new Error("Item not found");
                 }
-                const updatedItem = JSON.parse(body);
-                updatedItem.id = id;
+                const updatedData = JSON.parse(body);
+                const updatedItem = { id, name: updatedData.name, body: updatedData.body };
                 items[index] = updatedItem;
                 writeData(items);
                 res.writeHead(200, { "Content-Type": "application/json" });
@@ -93,6 +95,35 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
+    if (path.startsWith("/items/") && method === "PATCH") {
+        const id = parseInt(path.split("/")[2]);
+        let body = "";
+        req.on("data", (chunk) => (body += chunk.toString()));
+        req.on("end", () => {
+            try {
+                const items = readData();
+                const index = items.findIndex((item) => item.id === id);
+                if (index === -1) {
+                    throw new Error("Item not found");
+                }
+    
+                const updateData = JSON.parse(body);
+                
+                // Only update the provided fields
+                items[index] = { ...items[index], ...updateData };
+    
+                writeData(items);
+    
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, message: "Item partially updated", data: items[index] }));
+            } catch (error) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, message: error.message }));
+            }
+        });
+        return;
+    }
+    
 
     // DELETE /items/:id → Delete an item
     if (path.startsWith("/items/") && method === "DELETE") {

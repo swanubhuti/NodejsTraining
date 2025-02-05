@@ -94,6 +94,35 @@ const server = http.createServer(async (req, res) => {
             });
             return;
         }
+        if (path.startsWith("/items/") && method === "PATCH") {
+            const id = parseInt(path.split("/")[2]);
+            let body = "";
+            req.on("data", (chunk) => (body += chunk.toString()));
+            req.on("end", async () => {
+                try {
+                    const items = await readDataAsync();
+                    const index = items.findIndex((item) => item.id === id);
+                    if (index === -1) {
+                        throw new Error("Item not found");
+                    }
+        
+                    const updateData = JSON.parse(body);
+                    
+                    // Only update the provided fields
+                    items[index] = { ...items[index], ...updateData };
+        
+                    await writeDataAsync(items);
+        
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ success: true, message: "Item partially updated", data: items[index] }));
+                } catch (error) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ success: false, message: error.message }));
+                }
+            });
+            return;
+        }
+        
 
         // DELETE /items/:id → Delete an item
         if (path.startsWith("/items/") && method === "DELETE") {
